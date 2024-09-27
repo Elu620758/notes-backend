@@ -12,10 +12,18 @@ app.use(cors());
 app.use(bodyParser.json());
 
 // Enable CORS for specific origin (Netlify)
-app.use(cors({
-  origin: 'https://main--notestodo-app.netlify.app'  // Replace with your Netlify app's URL
-}));
 
+const allowedOrigins = ['https://main--notestodo-app.netlify.app', 'https://notestodo-app.netlify.app'];
+
+app.use(cors({
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  }
+}));
 // Connect to MongoDB Atlas
 const dbURI = process.env.db_url;
 mongoose.connect(dbURI)
